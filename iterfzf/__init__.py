@@ -5,7 +5,7 @@ from os import fspath, PathLike
 from pathlib import Path
 import subprocess
 import sys
-from typing import AnyStr, Iterable, Literal, Optional
+from typing import AnyStr, Iterable, Literal, Optional, Dict
 
 __all__ = '__fzf_version__', '__version__', 'BUNDLED_EXECUTABLE', 'iterfzf'
 
@@ -44,6 +44,7 @@ def iterfzf(
     cycle: bool = False,
     __extra__: Iterable[str] = (),
     encoding: Optional[str] = None,
+    bind: Optional[Dict[str, str]] = None,
     executable: PathLike = BUNDLED_EXECUTABLE or EXECUTABLE_NAME
 ):
     cmd = [fspath(executable), '--prompt=' + prompt]
@@ -69,6 +70,9 @@ def iterfzf(
         cmd.append('--ansi')
     if cycle:
         cmd.append('--cycle')
+    if bind:
+        bind_options = ','.join([r"{}:{}".format(keys, action) for keys, action in bind.items()])
+        cmd.append('--bind=' + bind_options)
     if __extra__:
         cmd.extend(__extra__)
     encoding = encoding or sys.getdefaultencoding()
