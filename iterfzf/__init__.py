@@ -42,9 +42,9 @@ def iterfzf(
     # Misc:
     query: str = '',
     cycle: bool = False,
+    bind: Optional[Dict[str, str]] = None,
     __extra__: Iterable[str] = (),
     encoding: Optional[str] = None,
-    bind: Optional[Dict[str, str]] = None,
     executable: PathLike = BUNDLED_EXECUTABLE or EXECUTABLE_NAME
 ):
     cmd = [fspath(executable), '--prompt=' + prompt]
