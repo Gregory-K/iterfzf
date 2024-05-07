@@ -5,12 +5,12 @@ from os import fspath, PathLike
 from pathlib import Path
 import subprocess
 import sys
-from typing import AnyStr, Iterable, Literal, Optional, Dict
+from typing import AnyStr, Iterable, Literal, Mapping, Optional
 
 __all__ = '__fzf_version__', '__version__', 'BUNDLED_EXECUTABLE', 'iterfzf'
 
 __fzf_version__ = '0.51.0'
-__version__ = '1.3.' + __fzf_version__
+__version__ = '1.5.' + __fzf_version__
 
 POSIX_EXECUTABLE_NAME: Literal['fzf'] = 'fzf'
 WINDOWS_EXECUTABLE_NAME: Literal['fzf.exe'] = 'fzf.exe'
@@ -34,6 +34,7 @@ def iterfzf(
     # Interface:
     multi: bool = False,
     mouse: bool = True,
+    bind: Optional[Mapping[str, str]] = None,
     print_query: bool = False,
     # Layout:
     prompt: str = '> ',
@@ -42,7 +43,6 @@ def iterfzf(
     # Misc:
     query: str = '',
     cycle: bool = False,
-    bind: Optional[Dict[str, str]] = None,
     __extra__: Iterable[str] = (),
     encoding: Optional[str] = None,
     executable: PathLike = BUNDLED_EXECUTABLE or EXECUTABLE_NAME
@@ -60,6 +60,11 @@ def iterfzf(
         cmd.append('--multi')
     if not mouse:
         cmd.append('--no-mouse')
+    if bind:
+        bind_options = ','.join(
+            r"{}:{}".format(key, action) for key, action in bind.items()
+        )
+        cmd.append('--bind=' + bind_options)
     if print_query:
         cmd.append('--print-query')
     if query:
@@ -70,9 +75,6 @@ def iterfzf(
         cmd.append('--ansi')
     if cycle:
         cmd.append('--cycle')
-    if bind:
-        bind_options = ','.join([r"{}:{}".format(keys, action) for keys, action in bind.items()])
-        cmd.append('--bind=' + bind_options)
     if __extra__:
         cmd.extend(__extra__)
     encoding = encoding or sys.getdefaultencoding()
