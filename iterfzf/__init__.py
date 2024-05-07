@@ -25,37 +25,39 @@ BUNDLED_EXECUTABLE: Optional[Path] = \
 def iterfzf(
     iterable: Iterable[AnyStr],
     *,
-    # Sorting:
-    sort: bool = False,
-    # Search mode:
+    # Search mode
     extended: bool = True,
     exact: bool = False,
     case_sensitive: Optional[bool] = None,
+    # Search result
+    sort: bool = False,
     # Interface:
     multi: bool = False,
     mouse: bool = True,
     bind: Optional[Mapping[str, str]] = None,
-    print_query: bool = False,
+    cycle: bool = False,
     # Layout:
     prompt: str = '> ',
+    # Display
     ansi: bool = False,
+    # Preview
     preview: Optional[str] = None,
+    print_query: bool = False,
     # Misc:
     query: str = '',
-    cycle: bool = False,
     __extra__: Iterable[str] = (),
     encoding: Optional[str] = None,
     executable: PathLike = BUNDLED_EXECUTABLE or EXECUTABLE_NAME
 ):
     cmd = [fspath(executable), '--prompt=' + prompt]
-    if not sort:
-        cmd.append('--no-sort')
     if not extended:
         cmd.append('--no-extended')
-    if case_sensitive is not None:
-        cmd.append('+i' if case_sensitive else '-i')
     if exact:
         cmd.append('--exact')
+    if case_sensitive is not None:
+        cmd.append('+i' if case_sensitive else '-i')
+    if not sort:
+        cmd.append('--no-sort')
     if multi:
         cmd.append('--multi')
     if not mouse:
@@ -65,16 +67,16 @@ def iterfzf(
             r"{}:{}".format(key, action) for key, action in bind.items()
         )
         cmd.append('--bind=' + bind_options)
+    if cycle:
+        cmd.append('--cycle')
+    if ansi:
+        cmd.append('--ansi')
+    if preview:
+        cmd.append('--preview=' + preview)
     if print_query:
         cmd.append('--print-query')
     if query:
         cmd.append('--query=' + query)
-    if preview:
-        cmd.append('--preview=' + preview)
-    if ansi:
-        cmd.append('--ansi')
-    if cycle:
-        cmd.append('--cycle')
     if __extra__:
         cmd.extend(__extra__)
     encoding = encoding or sys.getdefaultencoding()
